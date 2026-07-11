@@ -181,6 +181,8 @@ local user_opts = {
     seek_handle_border_size = 0.42,        -- border thickness as a fraction of the handle radius
     seek_handle_border_hover_size = 0.31,  -- border thickness when handle is hovered (set equal to seek_handle_border_size to disable)
     seekbar_height = "medium",             -- seekbar height preset: "small", "medium", "large", "xlarge"
+    seekbar_height_override = 0,           -- visible seekbar height in px; 0 = use seekbar_height preset
+    seekbar_hitbox_height = 18,            -- seekbar hover/click/wheel hitbox height in px
     seekrange = true,                      -- show seek range overlay
     seekrangealpha = 150,                  -- transparency of the seek range
     livemarkers = true,                    -- update chapter markers on the seekbar when duration changes
@@ -196,6 +198,7 @@ local user_opts = {
 
     persistent_progress = false,           -- always show a small progress line at the bottom of the screen
     persistent_progress_height = 17,       -- height of the persistent progress bar
+    persistent_progress_alpha = 96,        -- alpha of persistent progress (0=opaque, 255=transparent)
     persistent_buffer = false,             -- show cached buffer status in the persistent progress line
 
     -- Miscellaneous settings
@@ -544,7 +547,16 @@ local function set_osc_styles()
         large  = { radius = 3, height = 6 },
         xlarge = { radius = 4, height = 8 }
     }
-    seekbar_height_style = seekbar_presets[user_opts.seekbar_height] or seekbar_presets.medium
+
+    local seekbar_height_override = tonumber(user_opts.seekbar_height_override) or 0
+    if seekbar_height_override > 0 then
+        seekbar_height_style = {
+            radius = math.max(0, math.floor(seekbar_height_override / 2)),
+            height = seekbar_height_override
+        }
+    else
+        seekbar_height_style = seekbar_presets[user_opts.seekbar_height] or seekbar_presets.medium
+    end
 
     osc_styles = {
         osc_fade_bg = "{\\blur" .. user_opts.fade_blur_strength .. "\\bord" .. user_opts.osc_fade_strength .. "\\1c&H0&\\3c&H" .. osc_color_convert(user_opts.osc_color) .. "&}",
@@ -2196,7 +2208,7 @@ layouts["default"] = function ()
     lo.alpha[1] = 128
 
     lo = add_layout("seekbar")
-    local seekbar_h = 18
+    local seekbar_h = math.max(user_opts.seekbar_hitbox_height, seekbar_bg_h)
     lo.geometry = {x = refX, y = refY - user_opts.osc_height, an = 5, w = osc_geo.w - 30, h = seekbar_h}
     lo.layer = 49
     lo.style = osc_styles.seekbar_fg
@@ -2210,8 +2222,9 @@ layouts["default"] = function ()
         lo = add_layout("persistent_seekbar")
         lo.geometry = {x = refX, y = refY, an = 5, w = osc_geo.w, h = user_opts.persistent_progress_height}
         lo.style = osc_styles.seekbar_fg
-        lo.slider.gap = (seekbar_h - seekbar_bg_h) / 2.0
+        lo.slider.gap = math.max(0, (user_opts.persistent_progress_height - math.min(seekbar_bg_h, user_opts.persistent_progress_height)) / 2.0)
         lo.slider.tooltip_an = 0
+        lo.alpha[1] = user_opts.persistent_progress_alpha
     end
 
     local audio_track = state.audio_track_count > 0
@@ -2474,7 +2487,7 @@ layouts["compact"] = function ()
     lo.alpha[1] = 128
 
     lo = add_layout("seekbar")
-    local seekbar_h = 18
+    local seekbar_h = math.max(user_opts.seekbar_hitbox_height, seekbar_bg_h)
     lo.geometry = {x = refX, y = refY - user_opts.osc_height, an = 5, w = osc_geo.w - 30, h = seekbar_h}
     lo.layer = 49
     lo.style = osc_styles.seekbar_fg
@@ -2488,8 +2501,9 @@ layouts["compact"] = function ()
         lo = add_layout("persistent_seekbar")
         lo.geometry = {x = refX, y = refY, an = 5, w = osc_geo.w, h = user_opts.persistent_progress_height}
         lo.style = osc_styles.seekbar_fg
-        lo.slider.gap = (seekbar_h - seekbar_bg_h) / 2.0
+        lo.slider.gap = math.max(0, (user_opts.persistent_progress_height - math.min(seekbar_bg_h, user_opts.persistent_progress_height)) / 2.0)
         lo.slider.tooltip_an = 0
+        lo.alpha[1] = user_opts.persistent_progress_alpha
     end
 
     local time_codes_width = get_time_codes_width()
@@ -2683,7 +2697,7 @@ layouts["mini"] = function ()
     lo.alpha[1] = 128
 
     lo = add_layout("seekbar")
-    local seekbar_h = 18
+    local seekbar_h = math.max(user_opts.seekbar_hitbox_height, seekbar_bg_h)
     lo.geometry = {x = refX, y = refY - first_row_y - second_row_y, an = 5, w = osc_geo.w - 30, h = seekbar_h}
     lo.layer = 49
     lo.style = osc_styles.seekbar_fg
@@ -2697,8 +2711,9 @@ layouts["mini"] = function ()
         lo = add_layout("persistent_seekbar")
         lo.geometry = {x = refX, y = refY, an = 5, w = osc_geo.w, h = user_opts.persistent_progress_height}
         lo.style = osc_styles.seekbar_fg
-        lo.slider.gap = (seekbar_h - seekbar_bg_h) / 2.0
+        lo.slider.gap = math.max(0, (user_opts.persistent_progress_height - math.min(seekbar_bg_h, user_opts.persistent_progress_height)) / 2.0)
         lo.slider.tooltip_an = 0
+        lo.alpha[1] = user_opts.persistent_progress_alpha
     end
 
     -- left side buttons
@@ -2858,7 +2873,7 @@ layouts["seekbar"] = function ()
     lo.alpha[1] = 128
 
     lo = add_layout("seekbar")
-    local seekbar_h = 18
+    local seekbar_h = math.max(user_opts.seekbar_hitbox_height, seekbar_bg_h)
     lo.geometry = {x = refX, y = refY - first_row_y, an = 5, w = osc_geo.w - 30, h = seekbar_h}
     lo.layer = 49
     lo.style = osc_styles.seekbar_fg
@@ -2872,8 +2887,9 @@ layouts["seekbar"] = function ()
         lo = add_layout("persistent_seekbar")
         lo.geometry = {x = refX, y = refY, an = 5, w = osc_geo.w, h = user_opts.persistent_progress_height}
         lo.style = osc_styles.seekbar_fg
-        lo.slider.gap = (seekbar_h - seekbar_bg_h) / 2.0
+        lo.slider.gap = math.max(0, (user_opts.persistent_progress_height - math.min(seekbar_bg_h, user_opts.persistent_progress_height)) / 2.0)
         lo.slider.tooltip_an = 0
+        lo.alpha[1] = user_opts.persistent_progress_alpha
     end
 
     -- time codes
@@ -4443,6 +4459,24 @@ local function validate_user_opts()
     if user_opts.seek_handle_size < 0 then
         msg.warn("seek_handle_size must be 0 or higher. Setting it to 0 (minimum).")
         user_opts.seek_handle_size = 0
+    end
+
+    if user_opts.seekbar_height_override < 0 then
+        msg.warn("seekbar_height_override must be 0 or higher. Setting it to 0.")
+        user_opts.seekbar_height_override = 0
+    end
+
+    if user_opts.seekbar_hitbox_height < 1 then
+        msg.warn("seekbar_hitbox_height must be 1 or higher. Setting it to 1.")
+        user_opts.seekbar_hitbox_height = 1
+    end
+
+    if user_opts.persistent_progress_alpha < 0 then
+        msg.warn("persistent_progress_alpha must be between 0 and 255. Setting it to 0.")
+        user_opts.persistent_progress_alpha = 0
+    elseif user_opts.persistent_progress_alpha > 255 then
+        msg.warn("persistent_progress_alpha must be between 0 and 255. Setting it to 255.")
+        user_opts.persistent_progress_alpha = 255
     end
 
     local function validate_string_opt(key, valid, default)
