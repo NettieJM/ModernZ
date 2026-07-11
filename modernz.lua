@@ -1292,7 +1292,8 @@ local function get_seekbar_handle_pos(element)
     if not pos then return 0, 0, false end
 
     local elem_geo = element.layout.geometry
-    local handle_radius = user_opts.seek_handle_size * elem_geo.h / 2
+    local visual_h = element.layout.slider and ((elem_geo.h - 2 * element.layout.slider.gap) or elem_geo.h) or elem_geo.h
+    local handle_radius = user_opts.seek_handle_size * visual_h / 2
     local handle_x = get_slider_ele_pos_for(element, pos)
     local center_y = elem_geo.h / 2
 
