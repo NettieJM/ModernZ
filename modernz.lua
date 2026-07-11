@@ -1237,7 +1237,8 @@ local function prepare_elements()
             --draw static slider parts
             local slider_lo = element.layout.slider
             -- calculate positions of min and max points
-            element.slider.min.ele_pos = user_opts.seek_handle_size > 0 and (user_opts.seek_handle_size * elem_geo.h / 2) or slider_lo.border
+            local visual_slider_h = slider_lo.base_visual_h or elem_geo.h
+            element.slider.min.ele_pos = user_opts.seek_handle_size > 0 and (user_opts.seek_handle_size * visual_slider_h / 2) or slider_lo.border
             element.slider.max.ele_pos = elem_geo.w - element.slider.min.ele_pos
             element.slider.min.glob_pos = element.hitbox.x1 + element.slider.min.ele_pos
             element.slider.max.glob_pos = element.hitbox.x1 + element.slider.max.ele_pos
@@ -1292,8 +1293,8 @@ local function get_seekbar_handle_pos(element)
     if not pos then return 0, 0, false end
 
     local elem_geo = element.layout.geometry
-    local visual_h = seekbar_height_style.height + 14
-    local handle_radius = user_opts.seek_handle_size * (element.layout.slider and visual_h or elem_geo.h) / 2
+    local visual_h = element.layout.slider and element.layout.slider.base_visual_h or elem_geo.h
+    local handle_radius = user_opts.seek_handle_size * visual_h / 2
     local handle_x = get_slider_ele_pos_for(element, pos)
     local center_y = elem_geo.h / 2
 
@@ -2215,6 +2216,7 @@ layouts["default"] = function ()
     lo.style = osc_styles.seekbar_fg
     lo.slider.handle_color = user_opts.seek_handle_color
     lo.slider.handle_border = user_opts.seek_handle_border_color
+    lo.slider.base_visual_h = seekbar_height_style.height + 14
     lo.slider.gap = (seekbar_h - seekbar_bg_h) / 2.0
     lo.slider.radius = user_opts.slider_rounded_corners and seekbar_height_style.radius or 0
     lo.slider.tooltip_an = 2
@@ -2494,6 +2496,7 @@ layouts["compact"] = function ()
     lo.style = osc_styles.seekbar_fg
     lo.slider.handle_color = user_opts.seek_handle_color
     lo.slider.handle_border = user_opts.seek_handle_border_color
+    lo.slider.base_visual_h = seekbar_height_style.height + 14
     lo.slider.gap = (seekbar_h - seekbar_bg_h) / 2.0
     lo.slider.radius = user_opts.slider_rounded_corners and seekbar_height_style.radius or 0
     lo.slider.tooltip_an = 2
@@ -2704,6 +2707,7 @@ layouts["mini"] = function ()
     lo.style = osc_styles.seekbar_fg
     lo.slider.handle_color = user_opts.seek_handle_color
     lo.slider.handle_border = user_opts.seek_handle_border_color
+    lo.slider.base_visual_h = seekbar_height_style.height + 14
     lo.slider.gap = (seekbar_h - seekbar_bg_h) / 2.0
     lo.slider.radius = user_opts.slider_rounded_corners and seekbar_height_style.radius or 0
     lo.slider.tooltip_an = 2
@@ -2880,6 +2884,7 @@ layouts["seekbar"] = function ()
     lo.style = osc_styles.seekbar_fg
     lo.slider.handle_color = user_opts.seek_handle_color
     lo.slider.handle_border = user_opts.seek_handle_border_color
+    lo.slider.base_visual_h = seekbar_height_style.height + 14
     lo.slider.gap = (seekbar_h - seekbar_bg_h) / 2.0
     lo.slider.radius = user_opts.slider_rounded_corners and seekbar_height_style.radius or 0
     lo.slider.tooltip_an = 2
