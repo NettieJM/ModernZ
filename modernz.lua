@@ -1210,7 +1210,12 @@ local function prepare_elements()
         end
 
         -- Calculate the hitbox
-        local hitbox_h = elem_geo.h + ((element.name == "volumebar" or element.name == "zoom_control") and 14 or 0)
+        local hitbox_h = elem_geo.h
+        if element.name == "seekbar" then
+            hitbox_h = math.max(hitbox_h, user_opts.seekbar_hitbox_height)
+        elseif element.name == "volumebar" or element.name == "zoom_control" then
+            hitbox_h = hitbox_h + 14
+        end
         local bX1, bY1, bX2, bY2 = get_hitbox_coords(elem_geo.x, elem_geo.y, elem_geo.an, hitbox_w, hitbox_h)
         element.hitbox = {x1 = bX1, y1 = bY1, x2 = bX2, y2 = bY2}
 
@@ -2210,13 +2215,13 @@ layouts["default"] = function ()
     lo.alpha[1] = 128
 
     lo = add_layout("seekbar")
-    local seekbar_h = math.max(user_opts.seekbar_hitbox_height, seekbar_bg_h)
+    local seekbar_h = math.max(18, seekbar_bg_h + 14)
     lo.geometry = {x = refX, y = refY - user_opts.osc_height, an = 5, w = osc_geo.w - 30, h = seekbar_h}
     lo.layer = 49
     lo.style = osc_styles.seekbar_fg
     lo.slider.handle_color = user_opts.seek_handle_color
     lo.slider.handle_border = user_opts.seek_handle_border_color
-    lo.slider.base_visual_h = seekbar_height_style.height + 14
+    lo.slider.base_visual_h = seekbar_h
     lo.slider.gap = (seekbar_h - seekbar_bg_h) / 2.0
     lo.slider.radius = user_opts.slider_rounded_corners and seekbar_height_style.radius or 0
     lo.slider.tooltip_an = 2
@@ -2490,13 +2495,13 @@ layouts["compact"] = function ()
     lo.alpha[1] = 128
 
     lo = add_layout("seekbar")
-    local seekbar_h = math.max(user_opts.seekbar_hitbox_height, seekbar_bg_h)
+    local seekbar_h = math.max(18, seekbar_bg_h + 14)
     lo.geometry = {x = refX, y = refY - user_opts.osc_height, an = 5, w = osc_geo.w - 30, h = seekbar_h}
     lo.layer = 49
     lo.style = osc_styles.seekbar_fg
     lo.slider.handle_color = user_opts.seek_handle_color
     lo.slider.handle_border = user_opts.seek_handle_border_color
-    lo.slider.base_visual_h = seekbar_height_style.height + 14
+    lo.slider.base_visual_h = seekbar_h
     lo.slider.gap = (seekbar_h - seekbar_bg_h) / 2.0
     lo.slider.radius = user_opts.slider_rounded_corners and seekbar_height_style.radius or 0
     lo.slider.tooltip_an = 2
@@ -2701,13 +2706,13 @@ layouts["mini"] = function ()
     lo.alpha[1] = 128
 
     lo = add_layout("seekbar")
-    local seekbar_h = math.max(user_opts.seekbar_hitbox_height, seekbar_bg_h)
+    local seekbar_h = math.max(18, seekbar_bg_h + 14)
     lo.geometry = {x = refX, y = refY - first_row_y - second_row_y, an = 5, w = osc_geo.w - 30, h = seekbar_h}
     lo.layer = 49
     lo.style = osc_styles.seekbar_fg
     lo.slider.handle_color = user_opts.seek_handle_color
     lo.slider.handle_border = user_opts.seek_handle_border_color
-    lo.slider.base_visual_h = seekbar_height_style.height + 14
+    lo.slider.base_visual_h = seekbar_h
     lo.slider.gap = (seekbar_h - seekbar_bg_h) / 2.0
     lo.slider.radius = user_opts.slider_rounded_corners and seekbar_height_style.radius or 0
     lo.slider.tooltip_an = 2
@@ -2878,13 +2883,13 @@ layouts["seekbar"] = function ()
     lo.alpha[1] = 128
 
     lo = add_layout("seekbar")
-    local seekbar_h = math.max(user_opts.seekbar_hitbox_height, seekbar_bg_h)
+    local seekbar_h = math.max(18, seekbar_bg_h + 14)
     lo.geometry = {x = refX, y = refY - first_row_y, an = 5, w = osc_geo.w - 30, h = seekbar_h}
     lo.layer = 49
     lo.style = osc_styles.seekbar_fg
     lo.slider.handle_color = user_opts.seek_handle_color
     lo.slider.handle_border = user_opts.seek_handle_border_color
-    lo.slider.base_visual_h = seekbar_height_style.height + 14
+    lo.slider.base_visual_h = seekbar_h
     lo.slider.gap = (seekbar_h - seekbar_bg_h) / 2.0
     lo.slider.radius = user_opts.slider_rounded_corners and seekbar_height_style.radius or 0
     lo.slider.tooltip_an = 2
