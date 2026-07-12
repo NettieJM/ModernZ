@@ -3533,7 +3533,12 @@ local function osc_init()
         return mp.get_property_number("percent-pos")
     end
     ne.slider.tooltipF = function (pos)
-        if state.duration ~= nil and pos ~= nil then return format_time(state.duration * (pos / 100)) end
+        if state.duration ~= nil and pos ~= nil then
+            local current = state.duration * (pos / 100)
+            local remaining = state.duration - current
+            local prefix = user_opts.unicodeminus and UNICODE_MINUS or "-"
+            return format_time(current) .. " / " .. prefix .. format_time(remaining)
+        end
         return ""
     end
     ne.slider.seekRangesF = build_cache_seek_ranges
